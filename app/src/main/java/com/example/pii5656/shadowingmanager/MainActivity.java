@@ -12,14 +12,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-
+import android.util.Log;
 import java.io.IOException;
 
 
 public class MainActivity extends Activity implements View.OnClickListener {
 
-    Button play_button, stop_button;
+    Button play_button = null, stop_button = null, rec_start_button = null, rec_stop_button = null;
     MediaPlayer mp = null;
+
+
     Record rec = new Record();//Instantiate RecordClass
     MediaPlayerSample play = new MediaPlayerSample();//Instantiate MediaPlayerSampleClass
 
@@ -27,29 +29,36 @@ public class MainActivity extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
+        mp = MediaPlayer.create(this,R.raw.jobs4);
         //Play oncreate
-        //play_button = (Button) findViewById(R.id.PlayButton);
-        //play_button.setOnClickListener(this);
-        //stop_button = (Button) findViewById(R.id.StopButton);
-        //stop_button.setOnClickListener(this);
-        //mp = MediaPlayer.create(this, R.raw.jobs4);
-
-
-        //Recors oncreate
-        rec.setAppearance();
+        /*
+        play_button = (Button) play.findViewById(R.id.PlayButton);
+        play_button.setOnClickListener(this);
+        stop_button = (Button) play.findViewById(R.id.StopButton);
+        stop_button.setOnClickListener(this);
+        mp = MediaPlayer.create(this, R.raw.jobs4);
+        */
+        play_button = (Button) findViewById(R.id.PlayButton);
+        play_button.setOnClickListener(this);
+        stop_button = (Button) findViewById(R.id.StopButton);
+        stop_button.setOnClickListener(this);
+        rec_start_button = (Button) findViewById(R.id.startRecordButton);
+        rec_start_button.setOnClickListener(this);
+        rec_stop_button = (Button) findViewById(R.id.stopRecordButton);
+        rec_stop_button.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
+        Log.v("AudioRecord", "click!!");
         switch (v.getId()) {
             case R.id.PlayButton:
                 if (!mp.isPlaying()) {
+                    Log.v("AudioRecord", "saisei");
                     // MediaPlayerの再生
                     play_button.setText("Pause");
-                    mp.start();
                 } else {
+                    Log.v("AudioRecord", "ichijiteisi");
                     // MediaPlayerの一時停止
                     play_button.setText("Start");
                     mp.pause();
@@ -70,31 +79,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 break;
 
             case R.id.startRecordButton:
-                if (!rec.onRecord && !rec.onPlay) {
-                    try {
-                        rec.recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-                        rec.recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-                        rec.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-                        rec.recorder.setOutputFile(rec.path);
-                        rec.recorder.prepare();
-                        rec.message("Start Recording");
-                        rec.recorder.start(); // Recording is now started
-                        rec.onRecord = true;
-                    } catch (IllegalStateException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                rec.setAppearance();
+                rec.startMediaRecord();
                 break;
             case R.id.stopRecordButton:
-                if (rec.onRecord) {
-                    rec.recorder.stop();
-                    rec.message("Stop Recording");
-                    rec.onRecord = false;
-                }
-                rec.setAppearance();
+                rec.stopRecord();
                 break;
         }
         /*

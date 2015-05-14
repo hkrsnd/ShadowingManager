@@ -12,9 +12,9 @@ import android.widget.Button;
 
 
 
-public class MediaPlayerSample extends Activity implements View.OnClickListener {
-    MediaPlayer mp = null;
+public class MediaPlayerSample implements View.OnClickListener {
     Button play_button, stop_button, record_button;
+    MediaPlayer mp = null;
     final static int SAMPLING_RATE = 11025;
     AudioRecord audioRec = null;
     boolean bIsRecording = false;
@@ -22,23 +22,6 @@ public class MediaPlayerSample extends Activity implements View.OnClickListener 
     //private WaveFile wav1 = new WaveFile();
 
     /** Called when the activity is first created. */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        //Play
-        play_button = (Button) findViewById(R.id.PlayButton);
-        play_button.setOnClickListener(this);
-        stop_button = (Button) findViewById(R.id.StopButton);
-        stop_button.setOnClickListener(this);
-        // メディアプレイヤーの作成
-        mp = MediaPlayer.create(this, R.raw.jobs4);
-
-        // ループ再生の設定
-        // mediaPlayer.setLooping(true);
-
-    }
 
     @Override
     public void onClick(View v) {

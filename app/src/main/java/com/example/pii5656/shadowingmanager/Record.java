@@ -1,99 +1,63 @@
 package com.example.pii5656.shadowingmanager;
 
+import java.io.File;
 import java.io.IOException;
+import java.lang.String;
 
 import android.app.Activity;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.util.Log;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-public class Record extends Activity{
-    public final MediaRecorder recorder = new MediaRecorder();
-    public final MediaPlayer player = new MediaPlayer();
-    public boolean onRecord = false;
-    public boolean onPlay = false;
-    public String path = "/recordandplay.3gp";
 
-    public void message(String text) {
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
-    }
+public class Record extends MediaRecorder {
 
-    public void setAppearance() {
-        final Button startRecord = (Button) findViewById(R.id.startRecordButton);
-        final Button stopRecord = (Button) findViewById(R.id.stopRecordButton);
-        final Button startPlay = (Button) findViewById(R.id.startPlayButton);
-        final Button stopPlay = (Button) findViewById(R.id.stopPlayButton);
-        startRecord.setEnabled(!onRecord && !onPlay);
-        stopRecord.setEnabled(onRecord);
-        startPlay.setEnabled(!onRecord && !onPlay);
-        stopPlay.setEnabled(onPlay);
-    }
+    public MediaRecorder mediarecorder;
 
-    /** Called when the activity is first created. */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    //録音用のメディアレコーダークラス
+    static final String filePath = "/sdcard/sample.mp3"; //録音用のファイルパス
 
-        setAppearance();
-    }
-
-    public void clickStartRecorder(View v) {
-        if (!onRecord && !onPlay) {
-            try {
-                recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-                recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-                recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-                recorder.setOutputFile(path);
-                recorder.prepare();
-                message("Start Recording");
-                recorder.start(); // Recording is now started
-                onRecord = true;
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+    public void startMediaRecord() {
+        try {
+            File mediafile = new File(filePath);
+            if (mediafile.exists()) {
+                //ファイルが存在する場合は削除する
+                //mediafile.delete();
+                Log.v("record","exists!!");
             }
+            mediafile = null;
+            mediarecorder = new MediaRecorder();
+            //マイクからの音声を録音する
+            mediarecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            //ファイルへの出力フォーマット DEFAULTにするとwavが扱えるはず
+            mediarecorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
+            //音声のエンコーダーも合わせてdefaultにする
+            mediarecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
+            //ファイルの保存先を指定
+            mediarecorder.setOutputFile(filePath);
+            //録音の準備をする
+            mediarecorder.prepare();
+            //録音開始
+            mediarecorder.start();
+            Log.v("record", "recording!");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        setAppearance();
     }
 
-    public void clickStopRecorder(View v) {
-        if (onRecord) {
-            recorder.stop();
-            message("Stop Recording");
-            onRecord = false;
+    //停止
+    public void stopRecord() {
+        try {
+            //録音停止
+            mediarecorder.stop();
+            mediarecorder.reset();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        setAppearance();
-    }
-
-    public void clickStartPlayer(View v) {
-        if (!onRecord && !onPlay) {
-            try {
-                player.setDataSource(path);
-                player.prepare();
-                message("Start Play");
-                player.start();
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            onPlay = true;
-        }
-        setAppearance();
-    }
-    public void clickStopPlayer(View v) {
-        if (onPlay) {
-            player.stop();
-            message("Stop Play");
-            player.reset();
-            onPlay = false;
-        }
-        setAppearance();
     }
 }
