@@ -11,18 +11,18 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-public class Record extends Activity {
-    private final MediaRecorder recorder = new MediaRecorder();
-    private final MediaPlayer player = new MediaPlayer();
-    private boolean onRecord = false;
-    private boolean onPlay = false;
-    private String path = "/recordandplay.3gp";
+public class Record extends Activity{
+    public final MediaRecorder recorder = new MediaRecorder();
+    public final MediaPlayer player = new MediaPlayer();
+    public boolean onRecord = false;
+    public boolean onPlay = false;
+    public String path = "/recordandplay.3gp";
 
-    private void message(String text) {
+    public void message(String text) {
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 
-    private void setAppearance() {
+    public void setAppearance() {
         final Button startRecord = (Button) findViewById(R.id.startRecordButton);
         final Button stopRecord = (Button) findViewById(R.id.stopRecordButton);
         final Button startPlay = (Button) findViewById(R.id.startPlayButton);

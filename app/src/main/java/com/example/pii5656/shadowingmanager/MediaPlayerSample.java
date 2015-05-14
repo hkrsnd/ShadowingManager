@@ -95,6 +95,4 @@ public class MediaPlayerSample extends Activity implements View.OnClickListener 
             }
         }
     }
-
-
 }
