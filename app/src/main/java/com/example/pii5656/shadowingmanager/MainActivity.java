@@ -14,8 +14,10 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Intent i = new Intent(getApplicationContext(),MediaPlayerSample.class); //アクティビティ呼び出し
-        startActivity(i);
+        //Intent i = new Intent(getApplicationContext(),MediaPlayerSample.class); //アクティビティ呼び出し
+        //startActivity(i);
+        Intent j = new Intent(getApplicationContext(),Record.class); //アクティビティ呼び出し
+        startActivity(j);
         //Intent j = new Intent(getApplicationContext(),AudioRecord.class); //アクティビティ呼び出し
         //startActivity(j);
     }

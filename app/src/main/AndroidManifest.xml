@@ -22,11 +22,9 @@
         <activity
             android:name="com.example.pii5656.shadowingmanager.MediaPlayerSample"
             android:label="@string/app_name" >
-
         </activity>
-
         <activity
-            android:name="com.moonlight_aska.android.recorder.Recorder"
+            android:name="com.example.pii5656.shadowingmanager.Record"
             android:label="@string/app_name" >
         </activity>
 

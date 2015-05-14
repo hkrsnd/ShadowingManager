@@ -1,5 +1,5 @@
 package com.example.pii5656.shadowingmanager;
-
+/*
 import android.app.Activity;
 import android.media.AudioFormat;
 import android.media.MediaRecorder;
@@ -176,3 +176,4 @@ public class MyWaveFile {
         }
     }
 }
+*/

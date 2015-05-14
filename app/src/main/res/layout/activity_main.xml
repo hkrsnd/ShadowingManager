@@ -19,12 +19,22 @@ http://schemas.android.com/apk/res/android ">
         android:layout_height="wrap_content" />
     <Button
         android:text="RecordStart"
-        android:id="@+id/audiostartButton"
+        android:id="@+id/startRecordButton"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
     <Button
         android:text="RecordStop"
-        android:id="@+id/audiostoButton"
+        android:id="@+id/stopRecordButton"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+    <Button
+        android:text="PlayStart"
+        android:id="@+id/startPlayButton"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+    <Button
+        android:text="PlayStop"
+        android:id="@+id/stopPlayButton"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
     <SeekBar

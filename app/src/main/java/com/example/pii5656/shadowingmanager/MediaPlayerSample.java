@@ -32,27 +32,12 @@ public class MediaPlayerSample extends Activity implements View.OnClickListener 
         play_button.setOnClickListener(this);
         stop_button = (Button) findViewById(R.id.StopButton);
         stop_button.setOnClickListener(this);
-        record_button = (Button) findViewById(R.id.RecordButton);
-        record_button.setOnClickListener(this);
         // メディアプレイヤーの作成
         mp = MediaPlayer.create(this, R.raw.jobs4);
 
         // ループ再生の設定
         // mediaPlayer.setLooping(true);
 
-        //Record
-        // バッファサイズの計算
-        bufSize = AudioRecord.getMinBufferSize(
-                SAMPLING_RATE,
-                AudioFormat.CHANNEL_CONFIGURATION_MONO,
-                AudioFormat.ENCODING_PCM_16BIT) * 2;
-        // AudioRecordの作成
-        audioRec = new AudioRecord(
-                MediaRecorder.AudioSource.MIC,
-                SAMPLING_RATE,
-                AudioFormat.CHANNEL_CONFIGURATION_MONO,
-                AudioFormat.ENCODING_PCM_16BIT,
-                bufSize);
     }
 
     @Override
