@@ -1,19 +1,9 @@
 package com.example.pii5656.shadowingmanager;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.String;
-
-import android.app.Activity;
-import android.graphics.Color;
-import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.util.Log;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
-
 
 public class Record extends MediaRecorder {
 

@@ -15,13 +15,10 @@ import android.widget.Button;
 import android.util.Log;
 import java.io.IOException;
 
-
 public class MainActivity extends Activity implements View.OnClickListener {
 
     Button play_button = null, stop_button = null, rec_start_button = null, rec_stop_button = null;
     MediaPlayer mp = null;
-
-
     Record rec = new Record();//Instantiate RecordClass
     MediaPlayerSample play = new MediaPlayerSample();//Instantiate MediaPlayerSampleClass
 
@@ -30,14 +27,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mp = MediaPlayer.create(this,R.raw.jobs4);
-        //Play oncreate
-        /*
-        play_button = (Button) play.findViewById(R.id.PlayButton);
-        play_button.setOnClickListener(this);
-        stop_button = (Button) play.findViewById(R.id.StopButton);
-        stop_button.setOnClickListener(this);
-        mp = MediaPlayer.create(this, R.raw.jobs4);
-        */
+
         play_button = (Button) findViewById(R.id.PlayButton);
         play_button.setOnClickListener(this);
         stop_button = (Button) findViewById(R.id.StopButton);
@@ -57,6 +47,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     Log.v("AudioRecord", "saisei");
                     // MediaPlayerの再生
                     play_button.setText("Pause");
+                    mp.start();
                 } else {
                     Log.v("AudioRecord", "ichijiteisi");
                     // MediaPlayerの一時停止
@@ -85,11 +76,20 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 rec.stopRecord();
                 break;
         }
-        /*
+
         @Override
         public boolean onCreateOptionsMenu (Menu menu){
             // Inflate the menu; this adds items to the action bar if it is present.
-            getMenuInflater().inflate(R.menu.menu_main, menu);
+            //getMenuInflater().inflate(R.menu.menu_main, menu);
+            // メニューの要素を追加して取得
+            MenuItem actionItem = menu.add("Action Button Help Icon");
+            // アイコンを設定
+            actionItem.setIcon(android.R.drawable.ic_menu_help);
+
+            // SHOW_AS_ACTION_ALWAYS:常に表示
+            actionItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
+            return true;
             return true;
         }
 
@@ -110,4 +110,5 @@ public class MainActivity extends Activity implements View.OnClickListener {
         }
         */
     }
+
 }
