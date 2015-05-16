@@ -9,6 +9,7 @@ import android.media.MediaRecorder;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -77,23 +78,15 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 break;
         }
 
+
         @Override
         public boolean onCreateOptionsMenu (Menu menu){
-            // Inflate the menu; this adds items to the action bar if it is present.
-            //getMenuInflater().inflate(R.menu.menu_main, menu);
-            // メニューの要素を追加して取得
-            MenuItem actionItem = menu.add("Action Button Help Icon");
-            // アイコンを設定
-            actionItem.setIcon(android.R.drawable.ic_menu_help);
-
-            // SHOW_AS_ACTION_ALWAYS:常に表示
-            actionItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-
-            return true;
-            return true;
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.menu_main, menu);
+            return super.onCreateOptionsMenu(menu);
         }
 
-
+        /*
         @Override
         public boolean onOptionsItemSelected (MenuItem item){
             // Handle action bar item clicks here. The action bar will
