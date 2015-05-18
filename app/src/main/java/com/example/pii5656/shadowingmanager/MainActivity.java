@@ -7,6 +7,7 @@ import com.example.pii5656.shadowingmanager.FileSelect.OnFileSelectDialogListene
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -24,12 +25,14 @@ import android.os.Environment;
 import android.widget.TextView;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
 public class MainActivity extends Activity implements View.OnClickListener, OnFileSelectDialogListener{
 
     Button play_button = null, stop_button = null, rec_start_button = null, rec_stop_button = null;
-    MediaPlayer mp = null;
+    TextView textview = null;
+    MediaPlayer mp = new MediaPlayer();
     Record rec = new Record();//Instantiate RecordClass
     MediaPlayerSample play = new MediaPlayerSample();//Instantiate MediaPlayerSampleClass
     private Menu mainMenu;
@@ -41,7 +44,7 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mp = MediaPlayer.create(this, R.raw.jobs4);
+        //mp = MediaPlayer.create(this, R.raw.jobs4);
 
         play_button = (Button) findViewById(R.id.PlayButton);
         play_button.setOnClickListener(this);
@@ -51,6 +54,7 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
         rec_start_button.setOnClickListener(this);
         rec_stop_button = (Button) findViewById(R.id.stopRecordButton);
         rec_stop_button.setOnClickListener(this);
+        textview = (TextView) findViewById(R.id.textView);
     }
 
     @Override
@@ -103,6 +107,7 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
         return super.onCreateOptionsMenu(menu);
     }
 
+    //メニューで要素が選択された時の動作
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         //Toast.makeText(this, "Selected Item: " + item.getTitle(), Toast.LENGTH_SHORT).show();
@@ -113,11 +118,29 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
                 //onClickFileSelect(this);
 
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("file/*");
+        intent.setType("*/*");
         startActivityForResult(intent, CHOSE_FILE_CODE);
-
-
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CHOSE_FILE_CODE && resultCode == RESULT_OK) {
+            //String filePath = data.getDataString().replace("file://", "");
+            if(mp != null){
+                mp.stop();
+                mp.reset();
+            }
+            String filePath = data.getDataString();
+            //選択されたファイルをセットする
+            try {
+                mp.setDataSource(this,Uri.parse(filePath));
+                mp.prepare();
+                //mp.start();
+            } catch (IOException e) {
+                //TODO　いい感じに例外処理
+            }
+        }
     }
 
     @Override
