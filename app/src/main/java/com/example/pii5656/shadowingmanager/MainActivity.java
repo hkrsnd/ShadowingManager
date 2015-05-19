@@ -138,7 +138,17 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
                 mp.stop();
                 mp.reset();
             }
+            //選択した音源ファイルのパス取得
             String filePath = data.getDataString();
+            //選択したのファイル名を表示
+            try{
+                String decodedfilePath = URLDecoder.decode(filePath, "utf-8");
+                int index = decodedfilePath.lastIndexOf("/");
+                String file_name = decodedfilePath.substring(index+1);
+                textview.setText(file_name);
+            } catch(UnsupportedEncodingException e) {
+                //例外処理
+            }
             //選択されたファイルをセットする
             try {
                 mp.setDataSource(this,Uri.parse(filePath));
