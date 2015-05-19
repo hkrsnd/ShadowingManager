@@ -1,8 +1,10 @@
 package com.example.pii5656.shadowingmanager;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.String;
 import android.media.MediaRecorder;
+import android.os.Environment;
 import android.util.Log;
 
 public class Record extends MediaRecorder {
@@ -11,6 +13,7 @@ public class Record extends MediaRecorder {
 
     //録音用のメディアレコーダークラス
     static final String filePath = "/sdcard/sample.mp3"; //録音用のファイルパス
+    //String saveDir = Environment.getExternalStorageDirectory().getPath() + "/test";
 
     public void startMediaRecord() {
         try {
@@ -48,6 +51,16 @@ public class Record extends MediaRecorder {
             mediarecorder.reset();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public boolean mkfile(String path){
+        File file = new File(path);
+        try{
+            return file.createNewFile();
+        }catch(IOException e){
+            System.out.println(e);
+            return false;
         }
     }
 }

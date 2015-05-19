@@ -55,11 +55,19 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
         rec_stop_button = (Button) findViewById(R.id.stopRecordButton);
         rec_stop_button.setOnClickListener(this);
         textview = (TextView) findViewById(R.id.textView);
+
+        //録音の保存先のディレクトリの作成
+        //String saveDir = Environment.getExternalStorageDirectory().getPath() + "/test";
+
+        String saveDir = Environment.getExternalStorageDirectory().getPath() + "/Shadowing/";
+        File folder = new File(saveDir);
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
     }
 
     @Override
     public void onClick(View v) {
-        Log.v("AudioRecord", "click!!");
         switch (v.getId()) {
             case R.id.PlayButton:
                 if (!mp.isPlaying()) {
@@ -83,7 +91,8 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
                     try {
                         // MediaPlayerの準備
                         mp.prepare();
-                    } catch (Exception e) { }
+                    } catch (Exception e) {
+                    }
                 }
                 break;
 
@@ -101,9 +110,7 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
     public boolean onCreateOptionsMenu(Menu menu) {
         final MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
-
         mainMenu = menu;
-
         return super.onCreateOptionsMenu(menu);
     }
 
