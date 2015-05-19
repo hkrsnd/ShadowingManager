@@ -97,9 +97,20 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
                 break;
 
             case R.id.startRecordButton:
+                if(mp != null){
+                    mp.start();
+                }
                 rec.startMediaRecord();
                 break;
             case R.id.stopRecordButton:
+                if(mp.isPlaying()){
+                    mp.stop();
+                    try{
+                        mp.prepare();
+                    } catch (IOException e){
+                        //TODO 例外処理
+                    }
+                }
                 rec.stopRecord();
                 break;
         }
@@ -177,26 +188,26 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
         }
         return true;
     }
-  
+
     /**
      * ファイル選択イベント
      */
     public void onClickFileSelect(View view) {
- 
+
         // ファイル選択ダイアログを表示
         FileSelect dialog = new FileSelect();
         dialog.setOnFileSelectDialogListener(this);
- 
+
         // 表示
         dialog.show(Environment.getExternalStorageDirectory().getPath());
     }
- 
+
     /**
      * ファイル選択完了イベント
      */
     @Override
     public void onClickFileSelect(File file) {
- 
+
         if (file != null) {
             // 選択ファイルを設定
             //((TextView)findViewById(R.id.text)).setText(file.getPath() + file.getName());
