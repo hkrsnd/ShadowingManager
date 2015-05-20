@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
+import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -27,8 +28,13 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+//import java.util.logging.Handler;
+import android.os.Handler;
 
-public class MainActivity extends Activity implements View.OnClickListener, OnFileSelectDialogListener{
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+
+public class MainActivity extends Activity implements View.OnClickListener, OnFileSelectDialogListener,OnSeekBarChangeListener, Runnable{
 
     Button play_button = null, stop_button = null, rec_start_button = null, rec_stop_button = null;
     TextView textview = null;
@@ -40,6 +46,11 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
     private static final int MENU_ID_MENU2 = (Menu.FIRST + 2);
     FileSelect fileselect = new FileSelect();
     private final static int CHOSE_FILE_CODE = 12345;
+
+    private SeekBar seekBar;
+    private boolean running;
+    private Thread thread;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +75,15 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
         if (!folder.exists()) {
             folder.mkdirs();
         }
+
+        seekBar = (SeekBar)findViewById(R.id.seekBar1);
+        seekBar.setProgress(0);
+        seekBar.setMax(mp.getDuration());
+        seekBar.setOnSeekBarChangeListener(this);
+
+        running = true;
+        thread = new Thread(this);
+        thread.start();
     }
 
     @Override
@@ -74,12 +94,14 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
                     Log.v("AudioRecord", "saisei");
                     // MediaPlayerの再生
                     play_button.setText("Pause");
-                    mp.start();
+                    //mp.start();
+                    start();
                 } else {
                     Log.v("AudioRecord", "ichijiteisi");
                     // MediaPlayerの一時停止
                     play_button.setText("Start");
-                    mp.pause();
+                    //mp.pause();
+                    pause();
                 }
                 break;
 
@@ -87,7 +109,8 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
                 if (mp.isPlaying()) {
                     // MediaPlayerの停止
                     play_button.setText("Start");
-                    mp.stop();
+                    //mp.stop();
+                    stop();
                     try {
                         // MediaPlayerの準備
                         mp.prepare();
@@ -115,6 +138,26 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
                 break;
         }
     }
+
+    // Start mediaPlayer
+    public void start() {
+        if (!mp.isPlaying()) {
+            mp.seekTo(mp.getCurrentPosition());
+            mp.start();
+        }
+    }
+
+     // Pause mediaPlayer
+    public void pause(){
+        mp.pause();
+    }
+
+    // Stop mediaPlayer
+    public void stop(){
+        mp.pause();
+        mp.seekTo(0);
+    }
+
 
     //メニューボタンが押された際に表示されるアイテムを追加する
     @Override
@@ -188,6 +231,49 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
         }
         return true;
     }
+
+
+    // Run the thread using for seekBar
+    public void run(){
+        while(running){
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            handler.sendMessage(Message.obtain(handler, mp.getCurrentPosition()));
+        }
+    }
+
+    private Handler handler = new Handler() {
+        public void handleMessage(Message msg) {
+            seekBar.setProgress(msg.what);
+        }
+    };
+
+
+    public void stopRunning(){
+        running = false;
+    }
+
+    // SeekBar-control
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+    }
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromTouch) {
+        mp.seekTo(seekBar.getProgress());
+    }
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        //int msec = seekBar.getProgress() * mp.getDuration() /  100;
+        mp.seekTo(seekBar.getProgress());
+        //mp.seekTo(11100);
+        Log.e("test",String.valueOf(mp.getDuration()));
+    }
+
+
+
 
     /**
      * ファイル選択イベント
