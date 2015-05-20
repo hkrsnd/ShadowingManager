@@ -78,9 +78,7 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
 
         seekBar = (SeekBar)findViewById(R.id.seekBar1);
         seekBar.setProgress(0);
-        seekBar.setMax(mp.getDuration());
         seekBar.setOnSeekBarChangeListener(this);
-
         running = true;
         thread = new Thread(this);
         thread.start();
@@ -137,6 +135,7 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
                 rec.stopRecord();
                 break;
         }
+
     }
 
     // Start mediaPlayer
@@ -192,6 +191,8 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
                 mp.stop();
                 mp.reset();
             }
+
+
             //選択した音源ファイルのパス取得
             String filePath = data.getDataString();
             //選択したのファイル名を表示
@@ -208,6 +209,10 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
                 mp.setDataSource(this,Uri.parse(filePath));
                 mp.prepare();
                 //mp.start();
+                seekBar = (SeekBar)findViewById(R.id.seekBar1);
+                seekBar.setProgress(0);
+                seekBar.setMax(mp.getDuration());
+                seekBar.setOnSeekBarChangeListener(this);
             } catch (IOException e) {
                 //TODO　いい感じに例外処理
             }
@@ -262,7 +267,7 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
     }
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromTouch) {
-        mp.seekTo(seekBar.getProgress());
+        //mp.seekTo(seekBar.getProgress());
     }
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
