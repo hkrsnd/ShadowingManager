@@ -36,9 +36,10 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 
 public class MainActivity extends Activity implements View.OnClickListener, OnFileSelectDialogListener,OnSeekBarChangeListener, Runnable{
 
-    Button play_button = null, stop_button = null, rec_start_button = null, rec_stop_button = null;
+    Button play_button = null, stop_button = null, rec_start_button = null, rec_stop_button = null, rec_play_start_button = null, rec_play_stop_button = null;
     TextView textview = null;
     MediaPlayer mp = new MediaPlayer();
+    MediaPlayer rec_mp = new MediaPlayer();
     Record rec = new Record();//Instantiate RecordClass
     MediaPlayerSample play = new MediaPlayerSample();//Instantiate MediaPlayerSampleClass
     private Menu mainMenu;
@@ -67,6 +68,11 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
         rec_start_button.setOnClickListener(this);
         rec_stop_button = (Button) findViewById(R.id.stopRecordButton);
         rec_stop_button.setOnClickListener(this);
+        rec_play_start_button = (Button) findViewById(R.id.startPlayButton);
+        rec_play_start_button.setOnClickListener(this);
+        rec_play_stop_button = (Button) findViewById(R.id.startPlayButton);
+        rec_play_stop_button.setOnClickListener(this);
+
         textview = (TextView) findViewById(R.id.textView);
 
         //録音の保存先のディレクトリの作成
@@ -135,7 +141,17 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
                     }
                 }
                 rec.stopRecord();
+                try{
+                    rec_mp.setDataSource(savePath);
+                    rec_mp.prepare();
+                } catch(IOException e){
+                }
                 break;
+            case R.id.startPlayButton:
+                rec_mp.start();
+                break;
+            case R.id.stopPlayButton:
+                rec_mp.stop();
         }
 
     }
