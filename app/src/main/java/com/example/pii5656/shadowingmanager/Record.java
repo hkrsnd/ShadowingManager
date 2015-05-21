@@ -15,15 +15,8 @@ public class Record extends MediaRecorder {
     static final String filePath = "/sdcard/sample.mp3"; //録音用のファイルパス
     //String saveDir = Environment.getExternalStorageDirectory().getPath() + "/test";
 
-    public void startMediaRecord() {
+    public void startMediaRecord(String savePath) {
         try {
-            File mediafile = new File(filePath);
-            if (mediafile.exists()) {
-                //ファイルが存在する場合は削除する
-                //mediafile.delete();
-                Log.v("record","exists!!");
-            }
-            mediafile = null;
             mediarecorder = new MediaRecorder();
             //マイクからの音声を録音する
             mediarecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -32,7 +25,7 @@ public class Record extends MediaRecorder {
             //音声のエンコーダーも合わせてdefaultにする
             mediarecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
             //ファイルの保存先を指定
-            mediarecorder.setOutputFile(filePath);
+            mediarecorder.setOutputFile(savePath);
             //録音の準備をする
             mediarecorder.prepare();
             //録音開始
