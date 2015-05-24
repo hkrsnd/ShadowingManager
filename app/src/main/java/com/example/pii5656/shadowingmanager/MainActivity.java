@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.util.Log;
+import android.widget.ImageButton;
 import android.widget.Toast;
 import java.io.File;
 import android.app.Activity;
@@ -36,7 +37,8 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 
 public class MainActivity extends Activity implements View.OnClickListener, OnFileSelectDialogListener,OnSeekBarChangeListener, Runnable{
 
-    Button play_button = null, stop_button = null, rec_start_button = null, rec_stop_button = null, rec_play_start_button = null, rec_play_stop_button = null;
+    ImageButton play_button = null, stop_button = null, rec_start_button = null, rec_stop_button = null, rec_play_start_button = null, rec_play_stop_button = null,
+                fast_button = null, slow_button = null;
     TextView textview = null;
     MediaPlayer mp = new MediaPlayer();
     MediaPlayer rec_mp = new MediaPlayer();
@@ -54,24 +56,25 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
 
     String savePath = "/sdcard/Shadowing/sample.mp3";
 
+    Boolean flag_record = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //mp = MediaPlayer.create(this, R.raw.jobs4);
 
-        play_button = (Button) findViewById(R.id.PlayButton);
+        play_button = (ImageButton) findViewById(R.id.PlayButton);
         play_button.setOnClickListener(this);
-        stop_button = (Button) findViewById(R.id.StopButton);
-        stop_button.setOnClickListener(this);
-        rec_start_button = (Button) findViewById(R.id.startRecordButton);
+        //stop_button = (ImageButton) findViewById(R.id.StopButton);
+        //stop_button.setOnClickListener(this);
+        rec_start_button = (ImageButton) findViewById(R.id.startRecordButton);
         rec_start_button.setOnClickListener(this);
-        rec_stop_button = (Button) findViewById(R.id.stopRecordButton);
-        rec_stop_button.setOnClickListener(this);
-        rec_play_start_button = (Button) findViewById(R.id.startPlayButton);
+        //rec_stop_button = (ImageButton) findViewById(R.id.stopRecordButton);
+        //rec_stop_button.setOnClickListener(this);
+        rec_play_start_button = (ImageButton) findViewById(R.id.startPlayButton);
         rec_play_start_button.setOnClickListener(this);
-        rec_play_stop_button = (Button) findViewById(R.id.startPlayButton);
-        rec_play_stop_button.setOnClickListener(this);
+        //rec_play_stop_button = (ImageButton) findViewById(R.id.stoPlayButton);
+        //rec_play_stop_button.setOnClickListener(this);
 
         textview = (TextView) findViewById(R.id.textView);
 
@@ -99,22 +102,32 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
                 if (!mp.isPlaying()) {
                     Log.v("AudioRecord", "saisei");
                     // MediaPlayerの再生
-                    play_button.setText("Pause");
+                    //play_button.setText("Pause");
                     //mp.start();
+                    this.findViewById(R.id.PlayButton).setActivated(true);
                     start();
+                    mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            findViewById(R.id.PlayButton).setActivated(false);
+                            mp.pause();
+                            mp.seekTo(0);
+                        }
+                    });
                 } else {
                     Log.v("AudioRecord", "ichijiteisi");
                     // MediaPlayerの一時停止
-                    play_button.setText("Start");
+                    //play_button.setText("Start");
                     //mp.pause();
+                    this.findViewById(R.id.PlayButton).setActivated(false);
                     pause();
                 }
                 break;
-
+            /*
             case R.id.StopButton:
                 if (mp.isPlaying()) {
                     // MediaPlayerの停止
-                    play_button.setText("Start");
+                    //play_button.setText("Start");
                     //mp.stop();
                     stop();
                     try {
@@ -124,14 +137,39 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
                     }
                 }
                 break;
-
+             */
             case R.id.startRecordButton:
-                if(mp != null){
-                    mp.start();
+                if (flag_record == false) {
+                    if (mp != null) {
+                        mp.start();
+                    }
+                    this.findViewById(R.id.startRecordButton).setActivated(true);
+                    flag_record = true;
+                    rec.startMediaRecord(savePath);
+                    break;
+
+                } else {
+                    if (mp.isPlaying()) {
+                        mp.stop();
+                        try {
+                            mp.prepare();
+                        } catch (IOException e) {
+                            //TODO 例外処理
+                        }
+                    }
+                    rec.stopRecord();
+                    this.findViewById(R.id.startRecordButton).setActivated(false);
+                    flag_record = false;
+                    try {
+                        rec_mp = new MediaPlayer();//初期化する
+                        rec_mp.setDataSource(savePath);
+                        rec_mp.prepare();
+                    } catch (IOException e) {
+                    }
                 }
-                rec.startMediaRecord(savePath);
+                Log.v("test", "stop recording!");
                 break;
-            case R.id.stopRecordButton:
+            /*case R.id.stopRecordButton:
                 if(mp.isPlaying()){
                     mp.stop();
                     try{
@@ -146,12 +184,30 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
                     rec_mp.prepare();
                 } catch(IOException e){
                 }
-                break;
+                break;*/
             case R.id.startPlayButton:
-                rec_mp.start();
+                if (!rec_mp.isPlaying()) {
+                    this.findViewById(R.id.startPlayButton).setActivated(true);
+                    rec_mp.start();
+                    rec_mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            findViewById(R.id.startPlayButton).setActivated(false);
+                            rec_mp.pause();
+                            rec_mp.seekTo(0);
+                        }
+                    });
+
+
+                }
+                else{
+                    this.findViewById(R.id.startPlayButton).setActivated(false);
+                    rec_mp.stop();
+                    prepare(rec_mp);
+                }
                 break;
-            case R.id.stopPlayButton:
-                rec_mp.stop();
+            /*case R.id.stopPlayButton:
+                rec_mp.stop();*/
         }
 
     }
@@ -170,9 +226,17 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
     }
 
     // Stop mediaPlayer
-    public void stop(){
+    public void stop() {
         mp.pause();
         mp.seekTo(0);
+    }
+
+    public void prepare(MediaPlayer mp){
+        try{
+            mp.prepare();
+        }catch(IOException e){
+            //TODO いい感じの例外処理
+        }
     }
 
 
@@ -225,7 +289,7 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
             }
             //選択されたファイルをセットする
             try {
-                mp.setDataSource(this,Uri.parse(filePath));
+                mp.setDataSource(this, Uri.parse(filePath));
                 mp.prepare();
                 //mp.start();
                 seekBar = (SeekBar)findViewById(R.id.seekBar1);
@@ -295,9 +359,6 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
         //mp.seekTo(11100);
         Log.e("test",String.valueOf(mp.getDuration()));
     }
-
-
-
 
     /**
      * ファイル選択イベント

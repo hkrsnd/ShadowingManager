@@ -23,7 +23,7 @@ public class Record extends MediaRecorder {
             //ファイルへの出力フォーマット DEFAULTにするとwavが扱えるはず
             mediarecorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
             //音声のエンコーダーも合わせてdefaultにする
-            mediarecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
+            mediarecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
             //ファイルの保存先を指定
             mediarecorder.setOutputFile(savePath);
             //録音の準備をする
