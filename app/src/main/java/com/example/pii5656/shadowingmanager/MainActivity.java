@@ -38,7 +38,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 public class MainActivity extends Activity implements View.OnClickListener, OnFileSelectDialogListener,OnSeekBarChangeListener, Runnable{
 
     ImageButton play_button = null, stop_button = null, rec_start_button = null, rec_stop_button = null, rec_play_start_button = null, rec_play_stop_button = null,
-                fast_button = null, slow_button = null;
+                fast_button = null, back_button = null;
     TextView textview = null;
     MediaPlayer mp = new MediaPlayer();
     MediaPlayer rec_mp = new MediaPlayer();
@@ -53,6 +53,9 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
     private SeekBar seekBar;
     private boolean running;
     private Thread thread;
+    int totalTime = 0;
+    int seekTime = 0;
+    Boolean isrecorded = false;
 
     String savePath = "/sdcard/Shadowing/sample.mp3";
 
@@ -75,7 +78,10 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
         rec_play_start_button.setOnClickListener(this);
         //rec_play_stop_button = (ImageButton) findViewById(R.id.stoPlayButton);
         //rec_play_stop_button.setOnClickListener(this);
-
+        back_button = (ImageButton) findViewById(R.id.BackButton);
+        back_button.setOnClickListener(this);
+        fast_button = (ImageButton) findViewById(R.id.FastButton);
+        fast_button.setOnClickListener(this);
         textview = (TextView) findViewById(R.id.textView);
 
         //録音の保存先のディレクトリの作成
@@ -158,6 +164,7 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
                         }
                     }
                     rec.stopRecord();
+                    isrecorded = true;
                     this.findViewById(R.id.startRecordButton).setActivated(false);
                     flag_record = false;
                     try {
@@ -186,7 +193,11 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
                 }
                 break;*/
             case R.id.startPlayButton:
-                if (!rec_mp.isPlaying()) {
+                if(isrecorded == false) {
+                    break;
+                }
+                else if (!rec_mp.isPlaying()) {
+                    Log.v("test","null!!");
                     this.findViewById(R.id.startPlayButton).setActivated(true);
                     rec_mp.start();
                     rec_mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -197,17 +208,30 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
                             rec_mp.seekTo(0);
                         }
                     });
-
-
-                }
-                else{
+                } else{
                     this.findViewById(R.id.startPlayButton).setActivated(false);
                     rec_mp.stop();
                     prepare(rec_mp);
                 }
                 break;
-            /*case R.id.stopPlayButton:
-                rec_mp.stop();*/
+            case R.id.BackButton:
+                Log.v("test","back!");
+                totalTime = mp.getDuration();
+                seekTime = mp.getCurrentPosition();
+                seekTime -= 2000;
+                if ( seekTime < 0) seekTime = 0; // ０より小さい場合は開始位置に移動
+                if ( totalTime < seekTime ) seekTime = totalTime; // サウンド全体の長さより長い場合はサウンドの最後に移動
+                mp.seekTo(seekTime); //再生位置に移動
+                break;
+            case R.id.FastButton:
+                Log.v("test","back!");
+                totalTime = mp.getDuration();
+                seekTime = mp.getCurrentPosition();
+                seekTime += 2000;
+                if ( seekTime < 0) seekTime = 0; // ０より小さい場合は開始位置に移動
+                if ( totalTime < seekTime ) seekTime = totalTime; // サウンド全体の長さより長い場合はサウンドの最後に移動
+                mp.seekTo(seekTime); //再生位置に移動
+                break;
         }
 
     }
@@ -272,8 +296,9 @@ public class MainActivity extends Activity implements View.OnClickListener, OnFi
             if(mp != null){
                 mp.stop();
                 mp.reset();
+            }else if(flag_record == true){
+                rec.stop();
             }
-
 
             //選択した音源ファイルのパス取得
             String filePath = data.getDataString();

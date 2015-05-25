@@ -2,12 +2,12 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android" >
     <!-- Buttonが押された時 -->
     <item android:state_activated="true"
-        android:drawable="@drawable/ac_record" />
+        android:drawable="@drawable/mic" />
     <!-- 色を変更する場合は、android:color="@color/red" のようにする -->
 
     <!-- Buttonが押されてない時 -->
     <item android:state_activated="false"
-        android:drawable="@drawable/record" />
+        android:drawable="@drawable/ac_mic" />
 
     <!-- Buttonにフォーカスがあたった時
     <item android:state_focused="true"
