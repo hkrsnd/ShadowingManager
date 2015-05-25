@@ -1,15 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android" >
-    <!-- Buttonが押された時 -->
     <item android:state_activated="true"
         android:drawable="@drawable/rec_pause" />
-    <!-- 色を変更する場合は、android:color="@color/red" のようにする -->
-
-    <!-- Buttonが押されてない時 -->
     <item android:state_activated="false"
         android:drawable="@drawable/rec_start" />
-
-    <!-- Buttonにフォーカスがあたった時
-    <item android:state_focused="true"
-        android:drawable="@drawable/start_button" /> -->
 </selector>

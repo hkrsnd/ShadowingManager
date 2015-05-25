@@ -1,54 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
-    <item android:id="@+id/open_newfile" android:title="@string/action_settings"
-        android:orderInCategory="100" app:showAsAction="never" />
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
-        android:orderInCategory="100" app:showAsAction="never" />
-</menu> -->
-
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:yourapp="http://schemas.android.com/apk/res-auto" >
-
-    <!-- トップページ -->
     <item
         android:id="@+id/open_new_file"
-        android:title="ファイルを開く"
+        android:title="Open a new file"
         yourapp:showAsAction="always"/>
-
-    <!-- 共有 -->
-    <item
-        android:id="@+id/menu_share"
-        android:title="共有"
-        yourapp:showAsAction="always"/>
-
-    <!-- Options -->
-    <item
-        android:id="@+id/overflow_options"
-        android:title="Menu"
-        yourapp:showAsAction="always">
-        <menu>
-
-            <!-- ブラウザで開く -->
-            <item
-                android:id="@+id/menu_share_by_browser"
-                android:title="ブラウザで開く"
-                yourapp:showAsAction="never"/>
-
-            <!-- URLの確認 -->
-            <item
-                android:id="@+id/menu_show_url"
-                android:title="URLの確認"
-                yourapp:showAsAction="never"/>
-
-            <!-- ページ内検索 -->
-            <item
-                android:id="@+id/menu_text_find_start"
-                android:title="ページ内検索"
-                yourapp:showAsAction="never"/>
-            ...
-        </menu>
-    </item>
-
 </menu>

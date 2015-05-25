@@ -10,5 +10,4 @@
             android:drawable="@drawable/progress"
             android:scaleWidth="100%" />
     </item>
-
 </layer-list>
