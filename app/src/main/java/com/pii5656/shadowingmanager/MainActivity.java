@@ -1,52 +1,51 @@
-package com.example.pii5656.shadowingmanager;
+package com.pii5656.shadowingmanager;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.Message;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.util.Log;
 import android.widget.ImageButton;
-import java.io.File;
-import android.os.Environment;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import android.os.Handler;
-import android.widget.SeekBar;
-import android.widget.SeekBar.OnSeekBarChangeListener;
 
-public class MainActivity extends Activity implements View.OnClickListener,OnSeekBarChangeListener, Runnable{
-
-    ImageButton play_button = null, rec_start_button = null, rec_play_start_button = null,
-                fast_button = null, back_button = null;
+public class MainActivity extends Activity implements View.OnClickListener, OnSeekBarChangeListener, Runnable{
+    ImageButton play_button = null, rec_start_button = null, rec_play_start_button = null, fast_button = null, back_button = null;
     TextView textview = null;
     MediaPlayer mp = new MediaPlayer();
     MediaPlayer rec_mp = new MediaPlayer();
-    Record rec = new Record();//Instantiate RecordClass
+    Record rec = new Record();
     private final static int CHOSE_FILE_CODE = 12345;
-
     private SeekBar seekBar;
     private boolean running;
     private Thread thread;
     int totalTime = 0;
     int seekTime = 0;
-    Boolean isrecorded = false;
+    Boolean is_recording = false;
+    Boolean is_recorded = false;
+    String savePath = "/";
 
-    String savePath = "/sdcard/Shadowing/sample.mp3";
-
-    Boolean flag_record = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        /* 音声音量変更をボリュームボタンでできるようにする */
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
         play_button = (ImageButton) findViewById(R.id.PlayButton);
         play_button.setOnClickListener(this);
@@ -69,7 +68,6 @@ public class MainActivity extends Activity implements View.OnClickListener,OnSee
         if (!folder.exists()) {
             folder.mkdirs();
         }
-
         seekBar = (SeekBar)findViewById(R.id.seekBar1);
         seekBar.setProgress(0);
         seekBar.setOnSeekBarChangeListener(this);
@@ -83,36 +81,40 @@ public class MainActivity extends Activity implements View.OnClickListener,OnSee
         switch (v.getId()) {
             case R.id.PlayButton:
                 if(mp == null){
+                    /* 音源がセットされていなければ何もしない */
                     break;
                 }else if (!mp.isPlaying()) {
+                    /* 音源がセットされており、かつ再生中でなければ再生開始 */
                     this.findViewById(R.id.PlayButton).setActivated(true);
-                    start();
+                    mp.start();
                     mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                        //音源終了後のアクション
+                        /* 音源終了後のアクション */
                         @Override
                         public void onCompletion(MediaPlayer mp) {
                             findViewById(R.id.PlayButton).setActivated(false);
-
                             mp.seekTo(0);
                         }
                     });
                 } else {
+                    /* 再生中ならば一時停止 */
                     this.findViewById(R.id.PlayButton).setActivated(false);
-                    pause();
+                    mp.pause();
                 }
                 break;
-
             case R.id.startRecordButton:
-                if (flag_record == false) {
+                /* 録音中でなければ録音スタート */
+                if (is_recording == false) {
                     if (mp != null) {
                         mp.start();
                     }
                     this.findViewById(R.id.startRecordButton).setActivated(true);
-                    flag_record = true;
+                    is_recording = true;
                     rec.startMediaRecord(savePath);
                     break;
 
                 } else {
+                    /* 録音中の場合録音を一時停止
+                     * 音源が再生中の場合は音声も一時停止 */
                     if (mp.isPlaying()) {
                         mp.stop();
                         try {
@@ -122,27 +124,27 @@ public class MainActivity extends Activity implements View.OnClickListener,OnSee
                         }
                     }
                     rec.stopRecord();
-                    isrecorded = true;
+                    is_recorded = true;
                     this.findViewById(R.id.startRecordButton).setActivated(false);
-                    flag_record = false;
+                    is_recording = false;
                     try {
-                        //rec_mp = new MediaPlayer();//初期化する
                         rec_mp.reset();
                         rec_mp.setDataSource(savePath);
                         rec_mp.prepare();
                     } catch (IOException e) {
                     }
                 }
-                Log.v("test", "stop recording!");
                 break;
+            /* 録音された音源の再生 */
             case R.id.startPlayButton:
-                if(isrecorded == false) {
+                if(is_recorded == false) {
                     break;
                 }
+                /* 録音された音源が再生中でない場合 */
                 else if (!rec_mp.isPlaying()) {
-                    Log.v("test","null!!");
                     this.findViewById(R.id.startPlayButton).setActivated(true);
                     rec_mp.start();
+                    /* シークバーが終端に達した時の処理 */
                     rec_mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                         @Override
                         public void onCompletion(MediaPlayer mp) {
@@ -151,52 +153,39 @@ public class MainActivity extends Activity implements View.OnClickListener,OnSee
                             rec_mp.seekTo(0);
                         }
                     });
-                    break;
-                } else{
+                } else {
+                    /* 録音された音源が再生中の場合 */
                     this.findViewById(R.id.startPlayButton).setActivated(false);
                     rec_mp.stop();
                     prepare(rec_mp);
-                    break;
+
                 }
+                break;
+            /* 巻き戻し処理 */
             case R.id.BackButton:
-                Log.v("test","back!");
                 totalTime = mp.getDuration();
                 seekTime = mp.getCurrentPosition();
                 seekTime -= 2000;
-                if ( seekTime < 0) seekTime = 0; // ０より小さい場合は開始位置に移動
-                if ( totalTime < seekTime ) seekTime = totalTime; // サウンド全体の長さより長い場合はサウンドの最後に移動
-                mp.seekTo(seekTime); //再生位置に移動
+                /* 0より小さい場合は開始位置に移動 */
+                if ( seekTime < 0) seekTime = 0;
+                /* 音源全体の長さをオーバーするときは音源の終端に移動 */
+                if ( totalTime < seekTime ) seekTime = totalTime;
+                /* 再生位置を移動 */
+                mp.seekTo(seekTime);
                 break;
+            /* 早送り処理 */
             case R.id.FastButton:
-                Log.v("test","back!");
                 totalTime = mp.getDuration();
                 seekTime = mp.getCurrentPosition();
                 seekTime += 2000;
-                if ( seekTime < 0) seekTime = 0; // ０より小さい場合は開始位置に移動
-                if ( totalTime < seekTime ) seekTime = totalTime; // サウンド全体の長さより長い場合はサウンドの最後に移動
-                mp.seekTo(seekTime); //再生位置に移動
+                /* 0より小さい場合は開始位置に移動 */
+                if ( seekTime < 0) seekTime = 0;
+                /* 音源全体の長さをオーバーするときは音源の終端に移動 */
+                if ( totalTime < seekTime ) seekTime = totalTime;
+                /* 再生位置を移動 */
+                mp.seekTo(seekTime);
                 break;
         }
-
-    }
-
-    // Start mediaPlayer
-    public void start() {
-        if (!mp.isPlaying()) {
-            mp.seekTo(mp.getCurrentPosition());
-            mp.start();
-        }
-    }
-
-     // Pause mediaPlayer
-    public void pause(){
-        mp.pause();
-    }
-
-    // Stop mediaPlayer
-    public void stop() {
-        mp.pause();
-        mp.seekTo(0);
     }
 
     public void prepare(MediaPlayer mp){
@@ -235,7 +224,7 @@ public class MainActivity extends Activity implements View.OnClickListener,OnSee
                }
                mp.reset();
                Log.v("test","here!");
-            } if(flag_record == true){
+            } if(is_recording == true){
                 rec.stop();
             }
             //選択した音源ファイルのパス取得

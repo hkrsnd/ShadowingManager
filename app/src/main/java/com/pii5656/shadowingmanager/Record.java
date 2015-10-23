@@ -1,4 +1,4 @@
-package com.example.pii5656.shadowingmanager;
+package com.pii5656.shadowingmanager;
 
 import java.io.File;
 import java.io.IOException;
